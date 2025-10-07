@@ -3,7 +3,7 @@
 Replace `$ip` with your GCP instance external IP.
 
 ```powershell
-$ip = "YOUR_EXTERNAL_IP"
+$ip = "34.59.129.231"
 ```
 
 ## Less-1: Error-Based String Injection
