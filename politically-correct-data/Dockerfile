@@ -13,8 +13,9 @@ RUN apt-get update && \
 # Clone SQLi-Labs
 RUN git clone https://github.com/Audi-1/sqli-labs.git /var/www/html/sqli-labs
 
-# Copy sanitized database
+# Copy sanitized database and query logger
 COPY security.sql /tmp/security.sql
+COPY show-queries.php /var/www/html/sqli-labs/show-queries.php
 
 # Configure Apache
 RUN sed -i 's/DocumentRoot \/var\/www\/html/DocumentRoot \/var\/www\/html\/sqli-labs/' /etc/apache2/sites-available/000-default.conf && \
