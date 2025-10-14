@@ -8,7 +8,7 @@ This guide deploys a sanitized version of SQLi-Labs with appropriate test data (
 
 ```bash
 gcloud compute instances create sqli-lab \
-  --project=YOUR_PROJECT_ID \
+  --project=${PROJECT_ID} \
   --zone=us-central1-a \
   --machine-type=e2-micro \
   --image-family=cos-stable \
@@ -21,7 +21,7 @@ gcloud compute instances create sqli-lab \
 
 ```bash
 gcloud compute firewall-rules create allow-http-sqli \
-  --project=YOUR_PROJECT_ID \
+  --project=${PROJECT_ID} \
   --allow=tcp:80 \
   --target-tags=http-server
 ```
