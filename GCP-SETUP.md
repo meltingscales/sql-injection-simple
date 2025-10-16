@@ -7,6 +7,9 @@ This guide deploys a sanitized version of SQLi-Labs with appropriate test data (
 ### 1. Create GCP Compute Engine Instance
 
 ```bash
+
+export PROJECT_ID=foo
+
 gcloud compute instances create sqli-lab \
   --project=${PROJECT_ID} \
   --zone=us-central1-a \
@@ -31,13 +34,13 @@ gcloud compute firewall-rules create allow-http-sqli \
 Copy the sanitized container files to the GCP instance:
 
 ```bash
-gcloud compute scp --zone=us-central1-a --recurse politically-correct-data sqli-lab:~/
+gcloud compute scp --project=${PROJECT_ID} --zone=us-central1-a --recurse politically-correct-data sqli-lab:~/
 ```
 
 SSH into the instance:
 
 ```bash
-gcloud compute ssh sqli-lab --zone=us-central1-a
+gcloud compute ssh sqli-lab --zone=us-central1-a --project=${PROJECT_ID}
 ```
 
 Build and run the container:
@@ -67,6 +70,7 @@ exit
 ```bash
 gcloud compute instances describe sqli-lab \
   --zone=us-central1-a \
+  --project=${PROJECT_ID} \
   --format='get(networkInterfaces[0].accessConfigs[0].natIP)'
 ```
 

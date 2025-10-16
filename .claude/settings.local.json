@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(gcloud compute firewall-rules list:*)",
+      "Bash(gcloud compute instances list:*)",
+      "Bash(gcloud compute ssh:*)",
+      "Bash(curl:*)",
+      "Bash(mkdir:*)",
+      "WebFetch(domain:hub.docker.com)",
+      "WebSearch",
+      "WebFetch(domain:github.com)",
+      "Bash(gcloud compute scp:*)",
+      "Bash(chmod:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
