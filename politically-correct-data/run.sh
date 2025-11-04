@@ -26,10 +26,15 @@ if ! mysqladmin ping &>/dev/null; then
     exit 1
 fi
 
-echo "Creating database and importing data..."
-mysql -u root -e "CREATE DATABASE IF NOT EXISTS security;"
+echo "Creating database and importing sanitized data..."
+mysql -u root -e "DROP DATABASE IF EXISTS security;"
+mysql -u root -e "CREATE DATABASE security;"
 mysql -u root security < /tmp/security.sql
 echo "Database setup complete!"
+
+echo "Removing setup page to prevent data reset..."
+rm -f /var/www/html/sqli-labs/sql-connections/setup-db.php
+rm -f /var/www/html/sqli-labs/sql-connections/setup-db-challenge.php
 
 echo "Configuring database credentials..."
 cat > /var/www/html/sqli-labs/sql-connections/db-creds.inc <<EOF
