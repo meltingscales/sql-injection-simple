@@ -10,7 +10,13 @@
       "WebSearch",
       "WebFetch(domain:github.com)",
       "Bash(gcloud compute scp:*)",
-      "Bash(chmod:*)"
+      "Bash(chmod:*)",
+      "Bash(just deploy-cloudrun:*)",
+      "Bash(gcloud run services logs read:*)",
+      "Bash(just get-url:*)",
+      "Bash(just:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)"
     ],
     "deny": [],
     "ask": []

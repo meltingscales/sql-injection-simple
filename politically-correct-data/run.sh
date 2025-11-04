@@ -1,16 +1,37 @@
 #!/bin/bash
+set -e
 
-# Start MySQL
-service mysql start
+echo "Initializing MySQL data directory..."
+mkdir -p /var/run/mysqld
+chown mysql:mysql /var/run/mysqld
 
-# Wait for MySQL to be ready
-sleep 5
+echo "Starting MySQL directly..."
+# Start MySQL in background without service wrapper
+/usr/sbin/mysqld --user=mysql --skip-grant-tables &
+MYSQL_PID=$!
 
-# Create database and import sanitized data
+# Wait for MySQL to be ready with better check
+echo "Waiting for MySQL to be ready..."
+for i in {1..30}; do
+    if mysqladmin ping &>/dev/null; then
+        echo "MySQL is ready!"
+        break
+    fi
+    echo "Waiting for MySQL... attempt $i/30"
+    sleep 1
+done
+
+if ! mysqladmin ping &>/dev/null; then
+    echo "MySQL failed to start!"
+    exit 1
+fi
+
+echo "Creating database and importing data..."
 mysql -u root -e "CREATE DATABASE IF NOT EXISTS security;"
 mysql -u root security < /tmp/security.sql
+echo "Database setup complete!"
 
-# Update database credentials in SQLi-Labs
+echo "Configuring database credentials..."
 cat > /var/www/html/sqli-labs/sql-connections/db-creds.inc <<EOF
 <?php
 \$dbuser ='root';
@@ -21,5 +42,6 @@ cat > /var/www/html/sqli-labs/sql-connections/db-creds.inc <<EOF
 ?>
 EOF
 
+echo "Starting Apache on port 8080..."
 # Start Apache in foreground
-apachectl -D FOREGROUND
+exec apachectl -D FOREGROUND
