@@ -30,6 +30,12 @@ just delete PROJECT_ID      # Delete the service
 - **Auto-scaling**: Scales to zero when idle
 - **No infrastructure**: No VMs to manage
 
+## Important Notes
+
+**Cold Start Behavior**: The first request after the container has been idle may time out (~30 seconds) as MySQL initializes. This is normal. Subsequent requests will work immediately. The container stays warm for ~15 minutes after the last request.
+
+If you need the service to always be warm (no cold starts), you can modify the justfile to set `--min-instances 1`, but this will incur costs even when idle.
+
 ## Resources
 
 - [PHP SQL Injection Security](https://www.php.net/manual/en/security.database.sql-injection.php)
