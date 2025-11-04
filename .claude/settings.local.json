@@ -16,7 +16,10 @@
       "Bash(just get-url:*)",
       "Bash(just:*)",
       "Bash(git add:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Read(//home/melty/Git/command-injection-simple/**)",
+      "Bash(grep:*)"
     ],
     "deny": [],
     "ask": []
